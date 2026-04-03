@@ -187,7 +187,7 @@
 
     #petals-canvas { position:absolute; inset:0; z-index:25; pointer-events:none; }
 
-    /* ===== KEYFRAMES BỔ SUNG TIỀN TỐ CHO IOS ===== */
+    /* ===== KEYFRAMES ===== */
     @keyframes windBlow { 0% { transform: translate(0, 0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translate(120vw, 30vh) rotate(360deg); opacity: 0; } }
     @keyframes moveClouds{ to{ transform:translateX(-33.33%); } }
     @keyframes kiteHover { 0% { transform: translateY(0) translateX(0); } 100% { transform: translateY(-30px) translateX(20px); } }
@@ -257,9 +257,8 @@
   </div>
 
   <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
-  <script src="https://w.soundcloud.com/player/api.js"></script>
   
-  <iframe id="sc-widget" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/zang_producer/d-o-b-c-hong-kong-1999-1999&auto_play=false" allow="autoplay" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: -100;"></iframe>
+  <audio id="bgMusic" src="https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3" loop preload="auto"></audio>
 
   <div id="world-camera">
     
@@ -476,11 +475,15 @@
 
     // ===== HÀM KÍCH HOẠT TỪ MÀN HÌNH CHỜ =====
     function startExperience() {
-      // 1. Chạy nhạc ngay lập tức (Bắt buộc phải chạy trong hàm click này để iOS không chặn)
-      const iframeElement = document.getElementById('sc-widget');
-      const widget = SC.Widget(iframeElement);
-      widget.setVolume(50);
-      widget.play();
+      // 1. CHẠY NHẠC TRỰC TIẾP TỪ THẺ AUDIO NGAY LẬP TỨC
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.volume = 0.5;
+      let playBgPromise = bgMusic.play();
+      if (playBgPromise !== undefined) {
+        playBgPromise.catch(error => {
+          console.log("iOS vẫn chặn: ", error);
+        });
+      }
 
       // Mở khóa âm thanh Pop phụ
       const popSound = document.getElementById('popSound');
