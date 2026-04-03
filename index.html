@@ -15,7 +15,8 @@
       --text:#4f453b;
       --env-w:440px;
       --env-h:280px;
-      --film-h:170px;
+      /* TĂNG ĐỘ DÀY CUỘN PHIM TRÊN BẢN WEB */
+      --film-h: 220px; 
     }
 
     *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -31,39 +32,17 @@
         linear-gradient(180deg, #9ddcff 0%, #bde9ff 22%, #eaf7ff 48%, #f9f1e7 100%);
     }
 
-    /* ===== MÀN HÌNH CHỜ (LÁCH LUẬT AUTOPLAY IOS) ===== */
-    #start-overlay {
-      position: fixed; inset: 0; z-index: 99999;
-      background: #f9f1e7; display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      transition: opacity 0.8s ease, visibility 0.8s;
-      cursor: pointer;
-    }
-    #start-overlay.hidden {
-      opacity: 0; visibility: hidden; pointer-events: none;
-    }
-    .start-title {
-      font-family: 'Dancing Script', cursive; font-size: 42px; color: #b73d31; margin-bottom: 10px;
-    }
-    .start-btn {
-      padding: 12px 30px; border-radius: 30px; background: #d35400; color: #fff;
-      font-weight: 600; font-size: 15px; letter-spacing: 1px; box-shadow: 0 8px 15px rgba(211, 84, 0, 0.3);
-      animation: heartbeat 1.5s infinite;
-    }
-
     /* ===== BỘ ĐIỀU KHIỂN MÁY QUAY ===== */
     #world-camera {
       position: absolute; top: 0; left: 0; width: 100%; 
       height: 200vh; height: 200dvh;
       will-change: transform;
+      -webkit-transform: translateZ(0); 
+      transform: translateZ(0);
       transition: transform 4.5s cubic-bezier(0.35, 0.1, 0.45, 1);
       z-index: 10;
     }
-    #world-camera.pan-down { 
-      -webkit-transform: translateY(-100vh); 
-      -webkit-transform: translateY(-100dvh);
-      transform: translateY(-100dvh); 
-    }
+    #world-camera.pan-down { transform: translateY(-50%); -webkit-transform: translateY(-50%); }
 
     /* ===== CẢNH 1: BẦU TRỜI & CÂY ===== */
     #intro-tree-scene { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
@@ -120,26 +99,46 @@
     /* ===== CẢNH 2: BÀN LÀM VIỆC & THƯ MỜI ===== */
     #main-scene { position: absolute; top: 100vh; top: 100dvh; left: 0; width: 100%; height: 100vh; height: 100dvh; z-index: 20; overflow: hidden; }
 
-    #film-strip-bg{ position:absolute; inset:0; z-index:10; opacity:0; pointer-events:none; transition:opacity 1s ease; background: rgba(253, 246, 237, 0.65); overflow:hidden; }
+    #film-strip-bg{ position:absolute; inset:0; z-index:10; opacity:0; pointer-events:none; transition:opacity 1s ease; background: rgba(253, 246, 237, 0.7); overflow:hidden; }
     #film-strip-bg.show{ opacity:1; }
     
-    .film-wrapper { position: absolute; left: -50vw; width: 200vw; transform: rotate(-15deg); display: flex; z-index: 10; }
-    .fw-1 { top: 15%; } .fw-2 { top: 85%; }
+    /* FIX LỖI CUỘN PHIM: Trải dài và lấp kín không gian */
+    .film-wrapper { 
+      position: absolute; left: -100vw; width: 300vw; /* Tăng độ rộng cực đại để xoay không lòi viền */
+      transform: rotate(-15deg); display: flex; z-index: 10; opacity: 0.85; 
+    }
+    /* Các hàng phân bổ đều từ trên xuống dưới */
+    .fw-1 { top: -15%; } 
+    .fw-2 { top: 15%; } 
+    .fw-3 { top: 45%; } 
+    .fw-4 { top: 75%; }
+    .fw-5 { top: 105%; }
 
     .film-track {
-      position: relative; display: flex; align-items: center; width: max-content; padding: 14px 0; background-color: #1a1a1a; box-shadow: 0 15px 40px rgba(0,0,0,.4); gap: 12px; 
+      position: relative; display: flex; align-items: center; width: max-content; 
+      padding: 16px 0; background-color: #121212; /* Màu đen viền phim thật hơn */
+      box-shadow: 0 15px 40px rgba(0,0,0,.5); gap: 12px; 
     }
     .film-track::before, .film-track::after {
-      content: ''; position: absolute; left: 0; right: 0; height: 6px; background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.8) 0px, rgba(255,255,255,0.8) 5px, transparent 5px, transparent 10px);
+      content: ''; position: absolute; left: 0; right: 0; height: 8px; 
+      /* Lỗ phim chi tiết hơn */
+      background-image: repeating-linear-gradient(90deg, rgba(255,255,255,0.85) 0px, rgba(255,255,255,0.85) 6px, transparent 6px, transparent 14px);
     }
-    .film-track::before { top: 3px; } .film-track::after { bottom: 3px; }
+    .film-track::before { top: 4px; } .film-track::after { bottom: 4px; }
+    
     .film-track img {
-      height: calc(var(--film-h) - 28px); width: 240px; object-fit: cover; border-radius: 4px; border: 4px solid rgba(255,255,255,.9); filter: sepia(0.15) contrast(1.1); 
+      height: calc(var(--film-h) - 32px); 
+      aspect-ratio: 3/2; /* Ép tỷ lệ ảnh đẹp không bị méo */
+      object-fit: cover; border-radius: 4px; border: 2px solid rgba(255,255,255,.9); 
+      filter: sepia(0.2) contrast(1.15); 
     }
-    .track-1 { animation: scrollFilm1 45s linear infinite; } .track-2 { animation: scrollFilm2 50s linear infinite; }
+    
+    /* Chuyển động lặp 100% không bị rỗng ở cuối */
+    .track-1 { animation: scrollLeft 55s linear infinite; } 
+    .track-2 { animation: scrollRight 60s linear infinite; }
 
-    @keyframes scrollFilm1 { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-    @keyframes scrollFilm2 { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
+    @keyframes scrollLeft { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    @keyframes scrollRight { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 
     /* ===== BAO THƯ ===== */
     #envelope-wrapper{ position:absolute; left:50%; top:50%; width:var(--env-w); height:var(--env-h); transform:translate(-50%,-50%); z-index:8; opacity:0; filter:drop-shadow(0 20px 20px rgba(0,0,0,.25)); will-change: transform, opacity; }
@@ -187,7 +186,7 @@
 
     #petals-canvas { position:absolute; inset:0; z-index:25; pointer-events:none; }
 
-    /* ===== KEYFRAMES BỔ SUNG TIỀN TỐ CHO IOS ===== */
+    /* ===== KEYFRAMES ===== */
     @keyframes windBlow { 0% { transform: translate(0, 0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translate(120vw, 30vh) rotate(360deg); opacity: 0; } }
     @keyframes moveClouds{ to{ transform:translateX(-33.33%); } }
     @keyframes kiteHover { 0% { transform: translateY(0) translateX(0); } 100% { transform: translateY(-30px) translateX(20px); } }
@@ -195,17 +194,14 @@
     @keyframes stringSway { 0% { transform: rotate(-10deg); } 100% { transform: rotate(-25deg); } }
     @keyframes tailWave { 0% { transform: skewX(-15deg); } 100% { transform: skewX(15deg); } }
     @keyframes treeSway { 0% { transform: translateX(-50%) rotate(-1deg); } 100% { transform: translateX(-50%) rotate(2deg); } }
-    
-    @-webkit-keyframes fallDown { 0% { top: 18dvh; opacity: 1; -webkit-transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; -webkit-transform: scale(1); } }
-    @keyframes fallDown { 0% { top: 18dvh; opacity: 1; -webkit-transform: scale(1); transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; -webkit-transform: scale(1); transform: scale(1); } }
-    
+    @keyframes fallDown { 0% { top: 18dvh; opacity: 1; transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; transform: scale(1); } }
     @keyframes leafFlutter { 0% { transform: translateX(-60px) rotate(-30deg) rotateX(20deg); } 100% { transform: translateX(80px) rotate(60deg) rotateX(-20deg); } }
     @keyframes blowAway { 0% { top: calc(150dvh - 35px); opacity: 1; } 100% { top: 90dvh; margin-left: 300px; opacity: 0; transform: rotate(180deg) scale(0.5); } }
     @keyframes envDrop{ 0%{ top:-10%; opacity:0; transform:translate(-50%,-50%) rotate(-5deg) scale(.9); } 100%{ top:50%; opacity:1; transform:translate(-50%,-50%) rotate(0deg) scale(1); } }
     @keyframes heartbeat{ 0%,100%{ transform:translate(-50%, 0) scale(1); } 50%{ transform:translate(-50%, 0) scale(1.15); } }
     @keyframes sunPulse{ from{ transform:scale(1); } to{ transform:scale(1.08); } }
     
-    /* ===== TỐI ƯU MOBILE ===== */
+    /* ===== TỐI ƯU MOBILE THẤY RÕ CUỘN PHIM ĐÃ ĐƯỢC LÀM DÀY ===== */
     @media (max-width: 900px){
       :root{ --env-w:370px; --env-h:236px; }
       .detailed-tree { width: 550px; height: 650px; }
@@ -213,12 +209,19 @@
     }
     
     @media (max-width: 640px){
-      :root{ --env-w:min(88vw,330px); --env-h:210px; --film-h: 145px; } 
+      :root{ 
+        --env-w:min(88vw,330px); 
+        --env-h:210px; 
+        --film-h: 140px; /* Độ dày phù hợp cho mobile để ko bị vỡ ảnh */
+      } 
       
-      .fw-1 { top: 12%; transform: rotate(-10deg); } 
-      .fw-2 { top: 88%; transform: rotate(-10deg); } 
-      .film-track img { width: 175px; border-width: 3px; }
-      
+      .film-wrapper { width: 400vw; left: -150vw; transform: rotate(-20deg); }
+      .fw-1 { top: -5%; } 
+      .fw-2 { top: 20%; } 
+      .fw-3 { top: 45%; } 
+      .fw-4 { top: 70%; }
+      .fw-5 { top: 95%; }
+
       #invitation-card.show { transform:translate(-50%,-50%) scale(0.9); }
       
       .sun{ width:80px; height:80px; top:6%; right:6%; }
@@ -227,8 +230,7 @@
       .kite-container { left: 5%; top: 10%; transform: scale(0.7); }
       #hero-leaf-container { width: 55px; height: 55px; margin-left: -27.5px; }
       
-      @-webkit-keyframes fallDown { 0% { top: 15dvh; opacity: 1; -webkit-transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; -webkit-transform: scale(1); } }
-      @keyframes fallDown { 0% { top: 15dvh; opacity: 1; -webkit-transform: scale(1); transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; -webkit-transform: scale(1); transform: scale(1); } }
+      @keyframes fallDown { 0% { top: 15dvh; opacity: 1; transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; transform: scale(1); } }
       
       #invitation-card{ width: 92vw; padding: 10px; border-radius: 18px; } 
       .card-inner{ padding: 24px 14px; border-radius: 14px; } 
@@ -251,14 +253,8 @@
 </head>
 <body>
 
-  <div id="start-overlay" onclick="startExperience()">
-    <div class="start-title">Kỷ Yếu 12A2</div>
-    <div class="start-btn">Chạm để mở thiệp 💌</div>
-  </div>
-
   <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
-  
-  <audio id="bgMusic" src="12.mp3" loop preload="auto"></audio>
+  <audio id="bgMusic" src="12.mp3" preload="auto" loop></audio>
 
   <div id="world-camera">
     
@@ -324,34 +320,33 @@
     <div id="main-scene">
       
       <div id="film-strip-bg">
-        
         <div class="film-wrapper fw-1">
-          <div class="film-track track-1">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476226742_122193123506185245_353970942905238217_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFfLy-86bWyTYEEHRCo4MDFzXatQFTafoHNdq1AVNp-gV7XTi9qe7gdb0RyZ3PEj1aCbFFBZKSQ4vJyborsd0QB&_nc_ohc=anvfxMVG4dQQ7kNvwFOx98D&_nc_oc=AdrZmlziewYLOlCbWnanwmjaS7xHJn_VEknFfOPN0opaPbHsSXBk_CyvTwTdzrfYbQX-d7DlmNIhmOdN4iVNWgeY&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=xMjzESqaPAmIGp95BRm1WQ&_nc_ss=7a3a8&oh=00_Af3Cnlc9D2mcTN6pTf2H1fwYyFd1XFi_CVfpqW2yzSCXdQ&oe=69D55F86" alt="Kỷ yếu 1">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476178900_122193123158185245_1647602615092864714_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=101&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEOzlG27vrq5WGk4-_duSNyOSih0QB-6vQ5KKHRAH7q9GrpXAHuCvoYeZBiQ70gkc1y0vtXatNdNOQCLWwJP_CX&_nc_ohc=bjvHPOdxe3MQ7kNvwGgRixj&_nc_oc=AdoX2vwAUnUB5nq9kI8pAFD6x362YdO8W0Gl5nHoARq8wJNmLQ3nomhfQZhdBhgUfcdYB7Nbb1LmvoB4qjHLVJnN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=ieecH0bizPip2r1Vwhh_cA&_nc_ss=7a3a8&oh=00_Af08XkVsm6OB242phrGdF-rS-j6jSO7vXfz6F-xsYpYmmg&oe=69D5879D" alt="Kỷ yếu 2">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476356140_122193121442185245_5554739437405169675_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeH0aYdu9Yn3HS69m01mXecurBxCvmYrvnusHEK-Ziu-e4dtoWxcWL8iIw6-X4IXwzN-i8kcWhaQHmQPVklBnqfy&_nc_ohc=UCUfzsYv7xgQ7kNvwFHwnxG&_nc_oc=AdrIQ1k4auPovmWmDYy_0sluooISMPavsCRG_v2Jgw0nY5e8lugp_sH1jtyOJBx4u5iLDV1gVp7xiqI7rtnxOSkz&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=yO2Vy4Ohw6GW6U9oxs6njQ&_nc_ss=7a3a8&oh=00_Af08NNkysucNbPSRTigmrITSNuctbTRidey79L8-zUZbwA&oe=69D56121" alt="Kỷ yếu 3">
-            <img src="https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-6/476191559_122193049094185245_7111767719019522168_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEI8fns34rCJmvlK_-V-4Bnl6UOy7rxTC-XpQ7LuvFML839eUlb0l1J9tL5xR_BvXTD0QaZHMKAIDJCW7OdJAHy&_nc_ohc=32sgIVhEnj8Q7kNvwGYkKCh&_nc_oc=AdqUO0G9Ae_MFYNrOZTkMXIg9IoEcWV4JsQf2yRMYufcZBBXnMX6Cgr4vluWTvLj_oVH948ugNzPTaR48ugH92mF&_nc_zt=23&_nc_ht=scontent-hkg4-1.xx&_nc_gid=IW64j9DCoUD3kCMpP7fjjw&_nc_ss=7a3a8&oh=00_Af2ah3Ftxo3K5F2p0zCinzLsBmWhZj-kxsGHZMRx3f1HAA&oe=69D56D58" alt="Kỷ yếu 4">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/475863659_122192788394185245_8890872352108512538_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEAcsXeXkmgsgTlPi2xbAGcUIpnYV9gIeFQimdhX2Ah4aDn0xwUf0vASlAizmksxA8Dhao3quE9qy8F6go1OHj2&_nc_ohc=yJ1YPpS3fZkQ7kNvwEvr8U6&_nc_oc=Adqs2jCq8_uKlSnVcgsOyhdw4kyHbENCm_HQiN20KQ-btt-qhlNE8WmKINlL8L8SGMU09g7nzZaQ9jvTg05PVrVf&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=qltXdfp558M1wx5cD-BrWw&_nc_ss=7a3a8&oh=00_Af0djyZSxC5m-1zDNYuZuprAgW1h-ZdmX4Bt__-wZMrlaQ&oe=69D56B2B" alt="Kỷ yếu 5">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/474472171_122190711728185245_4664808661018102976_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGysgj-a28dYnSaDUuo2ZZts2syreXihDqzazKt5eKEOjzH1BR1vp7zf8HMT2tasfo_S2TKfmZhdy9ui6Wdo8we&_nc_ohc=ldjW8hTh-5sQ7kNvwGqsw-8&_nc_oc=AdptCRfgiLYVB5eFZw6zURDWPDNSd9RcXtNXQUTs2d17L0t4lwHZjET6zvlRU_YT_ZFAJvabfFX9i5PfgAVmyt3S&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=Uy2-eU1q6DtELqdihyU9Kw&_nc_ss=7a3a8&oh=00_Af27YUuN6mWEFxrXCPqer4d_bOS1Y0s_MaFCqI3rd5j9DA&oe=69D56389" alt="Kỷ yếu 6">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476225622_122193123632185245_8861135236452400516_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGzegDxaG-YGHfQjUuR88KSc2eHP3q-t9xzZ4c_er633JV_wSG6cpJ1tcPdprwP1XB7e1s_QgAK31DVVhpRO_UI&_nc_ohc=vLoIMzAzpJEQ7kNvwEBkRje&_nc_oc=AdrJpS1QybO3_oVRdWZBTKlOOqC-5-oey5eh3mL08-O4y6NA3jTAuh7ZewOomlNErKVTq917TkbAFM285etHaOhN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=HZa6c-nyEMbdg9zI696Z3w&_nc_ss=7a3a8&oh=00_Af0JLXUskfkEHks29Rhhx_a6ya3-n-IXtl2rMhEBv-_oRg&oe=69D57979" alt="Kỷ yếu 7">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/476311272_122193121328185245_766773050211721502_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeHOlYTMd1675VBDrXrtVIQqYYPBZzTcGAhhg8FnNNwYCFSwGu2LXofaaB7Xji8me7q2CZuSuiuQAcAfVE0gO96Q&_nc_ohc=hc17VUvEGpYQ7kNvwHlm4hF&_nc_oc=AdpwKVimiuCdgHmI2gdzj_cirE0dclDvHT4pHb049BO0oc0XNUMvJ3Ms7b6OpNzeNW0czRBC7U96Q-uxLyRWeAru&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=hee9ROPlxV6PM8_XsZUxLQ&_nc_ss=7a3a8&oh=00_Af1XB08sLG7tFDnHiDSfhEhXwn7jJNLLMo_h2S3pnAAikg&oe=69D574BC" alt="Kỷ yếu 8">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476226742_122193123506185245_353970942905238217_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFfLy-86bWyTYEEHRCo4MDFzXatQFTafoHNdq1AVNp-gV7XTi9qe7gdb0RyZ3PEj1aCbFFBZKSQ4vJyborsd0QB&_nc_ohc=anvfxMVG4dQQ7kNvwFOx98D&_nc_oc=AdrZmlziewYLOlCbWnanwmjaS7xHJn_VEknFfOPN0opaPbHsSXBk_CyvTwTdzrfYbQX-d7DlmNIhmOdN4iVNWgeY&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=xMjzESqaPAmIGp95BRm1WQ&_nc_ss=7a3a8&oh=00_Af3Cnlc9D2mcTN6pTf2H1fwYyFd1XFi_CVfpqW2yzSCXdQ&oe=69D55F86" alt="Kỷ yếu 1">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476178900_122193123158185245_1647602615092864714_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=101&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEOzlG27vrq5WGk4-_duSNyOSih0QB-6vQ5KKHRAH7q9GrpXAHuCvoYeZBiQ70gkc1y0vtXatNdNOQCLWwJP_CX&_nc_ohc=bjvHPOdxe3MQ7kNvwGgRixj&_nc_oc=AdoX2vwAUnUB5nq9kI8pAFD6x362YdO8W0Gl5nHoARq8wJNmLQ3nomhfQZhdBhgUfcdYB7Nbb1LmvoB4qjHLVJnN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=ieecH0bizPip2r1Vwhh_cA&_nc_ss=7a3a8&oh=00_Af08XkVsm6OB242phrGdF-rS-j6jSO7vXfz6F-xsYpYmmg&oe=69D5879D" alt="Kỷ yếu 2">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476356140_122193121442185245_5554739437405169675_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeH0aYdu9Yn3HS69m01mXecurBxCvmYrvnusHEK-Ziu-e4dtoWxcWL8iIw6-X4IXwzN-i8kcWhaQHmQPVklBnqfy&_nc_ohc=UCUfzsYv7xgQ7kNvwFHwnxG&_nc_oc=AdrIQ1k4auPovmWmDYy_0sluooISMPavsCRG_v2Jgw0nY5e8lugp_sH1jtyOJBx4u5iLDV1gVp7xiqI7rtnxOSkz&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=yO2Vy4Ohw6GW6U9oxs6njQ&_nc_ss=7a3a8&oh=00_Af08NNkysucNbPSRTigmrITSNuctbTRidey79L8-zUZbwA&oe=69D56121" alt="Kỷ yếu 3">
+          <div class="film-track track-1" id="track1">
+            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476226742_122193123506185245_353970942905238217_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFfLy-86bWyTYEEHRCo4MDFzXatQFTafoHNdq1AVNp-gV7XTi9qe7gdb0RyZ3PEj1aCbFFBZKSQ4vJyborsd0QB&_nc_ohc=anvfxMVG4dQQ7kNvwFOx98D&_nc_oc=AdrZmlziewYLOlCbWnanwmjaS7xHJn_VEknFfOPN0opaPbHsSXBk_CyvTwTdzrfYbQX-d7DlmNIhmOdN4iVNWgeY&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=xMjzESqaPAmIGp95BRm1WQ&_nc_ss=7a3a8&oh=00_Af3Cnlc9D2mcTN6pTf2H1fwYyFd1XFi_CVfpqW2yzSCXdQ&oe=69D55F86" alt="">
+            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476178900_122193123158185245_1647602615092864714_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=101&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEOzlG27vrq5WGk4-_duSNyOSih0QB-6vQ5KKHRAH7q9GrpXAHuCvoYeZBiQ70gkc1y0vtXatNdNOQCLWwJP_CX&_nc_ohc=bjvHPOdxe3MQ7kNvwGgRixj&_nc_oc=AdoX2vwAUnUB5nq9kI8pAFD6x362YdO8W0Gl5nHoARq8wJNmLQ3nomhfQZhdBhgUfcdYB7Nbb1LmvoB4qjHLVJnN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=ieecH0bizPip2r1Vwhh_cA&_nc_ss=7a3a8&oh=00_Af08XkVsm6OB242phrGdF-rS-j6jSO7vXfz6F-xsYpYmmg&oe=69D5879D" alt="">
+            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476356140_122193121442185245_5554739437405169675_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeH0aYdu9Yn3HS69m01mXecurBxCvmYrvnusHEK-Ziu-e4dtoWxcWL8iIw6-X4IXwzN-i8kcWhaQHmQPVklBnqfy&_nc_ohc=UCUfzsYv7xgQ7kNvwFHwnxG&_nc_oc=AdrIQ1k4auPovmWmDYy_0sluooISMPavsCRG_v2Jgw0nY5e8lugp_sH1jtyOJBx4u5iLDV1gVp7xiqI7rtnxOSkz&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=yO2Vy4Ohw6GW6U9oxs6njQ&_nc_ss=7a3a8&oh=00_Af08NNkysucNbPSRTigmrITSNuctbTRidey79L8-zUZbwA&oe=69D56121" alt="">
+            <img src="https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-6/476191559_122193049094185245_7111767719019522168_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEI8fns34rCJmvlK_-V-4Bnl6UOy7rxTC-XpQ7LuvFML839eUlb0l1J9tL5xR_BvXTD0QaZHMKAIDJCW7OdJAHy&_nc_ohc=32sgIVhEnj8Q7kNvwGYkKCh&_nc_oc=AdqUO0G9Ae_MFYNrOZTkMXIg9IoEcWV4JsQf2yRMYufcZBBXnMX6Cgr4vluWTvLj_oVH948ugNzPTaR48ugH92mF&_nc_zt=23&_nc_ht=scontent-hkg4-1.xx&_nc_gid=IW64j9DCoUD3kCMpP7fjjw&_nc_ss=7a3a8&oh=00_Af2ah3Ftxo3K5F2p0zCinzLsBmWhZj-kxsGHZMRx3f1HAA&oe=69D56D58" alt="">
+            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/475863659_122192788394185245_8890872352108512538_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEAcsXeXkmgsgTlPi2xbAGcUIpnYV9gIeFQimdhX2Ah4aDn0xwUf0vASlAizmksxA8Dhao3quE9qy8F6go1OHj2&_nc_ohc=yJ1YPpS3fZkQ7kNvwEvr8U6&_nc_oc=Adqs2jCq8_uKlSnVcgsOyhdw4kyHbENCm_HQiN20KQ-btt-qhlNE8WmKINlL8L8SGMU09g7nzZaQ9jvTg05PVrVf&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=qltXdfp558M1wx5cD-BrWw&_nc_ss=7a3a8&oh=00_Af0djyZSxC5m-1zDNYuZuprAgW1h-ZdmX4Bt__-wZMrlaQ&oe=69D56B2B" alt="">
+            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/474472171_122190711728185245_4664808661018102976_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGysgj-a28dYnSaDUuo2ZZts2syreXihDqzazKt5eKEOjzH1BR1vp7zf8HMT2tasfo_S2TKfmZhdy9ui6Wdo8we&_nc_ohc=ldjW8hTh-5sQ7kNvwGqsw-8&_nc_oc=AdptCRfgiLYVB5eFZw6zURDWPDNSd9RcXtNXQUTs2d17L0t4lwHZjET6zvlRU_YT_ZFAJvabfFX9i5PfgAVmyt3S&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=Uy2-eU1q6DtELqdihyU9Kw&_nc_ss=7a3a8&oh=00_Af27YUuN6mWEFxrXCPqer4d_bOS1Y0s_MaFCqI3rd5j9DA&oe=69D56389" alt="">
+            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476225622_122193123632185245_8861135236452400516_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGzegDxaG-YGHfQjUuR88KSc2eHP3q-t9xzZ4c_er633JV_wSG6cpJ1tcPdprwP1XB7e1s_QgAK31DVVhpRO_UI&_nc_ohc=vLoIMzAzpJEQ7kNvwEBkRje&_nc_oc=AdrJpS1QybO3_oVRdWZBTKlOOqC-5-oey5eh3mL08-O4y6NA3jTAuh7ZewOomlNErKVTq917TkbAFM285etHaOhN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=HZa6c-nyEMbdg9zI696Z3w&_nc_ss=7a3a8&oh=00_Af0JLXUskfkEHks29Rhhx_a6ya3-n-IXtl2rMhEBv-_oRg&oe=69D57979" alt="">
+            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/476311272_122193121328185245_766773050211721502_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeHOlYTMd1675VBDrXrtVIQqYYPBZzTcGAhhg8FnNNwYCFSwGu2LXofaaB7Xji8me7q2CZuSuiuQAcAfVE0gO96Q&_nc_ohc=hc17VUvEGpYQ7kNvwHlm4hF&_nc_oc=AdpwKVimiuCdgHmI2gdzj_cirE0dclDvHT4pHb049BO0oc0XNUMvJ3Ms7b6OpNzeNW0czRBC7U96Q-uxLyRWeAru&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=hee9ROPlxV6PM8_XsZUxLQ&_nc_ss=7a3a8&oh=00_Af1XB08sLG7tFDnHiDSfhEhXwn7jJNLLMo_h2S3pnAAikg&oe=69D574BC" alt="">
           </div>
         </div>
         
         <div class="film-wrapper fw-2">
-          <div class="film-track track-2">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/475863659_122192788394185245_8890872352108512538_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEAcsXeXkmgsgTlPi2xbAGcUIpnYV9gIeFQimdhX2Ah4aDn0xwUf0vASlAizmksxA8Dhao3quE9qy8F6go1OHj2&_nc_ohc=yJ1YPpS3fZkQ7kNvwEvr8U6&_nc_oc=Adqs2jCq8_uKlSnVcgsOyhdw4kyHbENCm_HQiN20KQ-btt-qhlNE8WmKINlL8L8SGMU09g7nzZaQ9jvTg05PVrVf&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=qltXdfp558M1wx5cD-BrWw&_nc_ss=7a3a8&oh=00_Af0djyZSxC5m-1zDNYuZuprAgW1h-ZdmX4Bt__-wZMrlaQ&oe=69D56B2B" alt="Kỷ yếu 5">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/474472171_122190711728185245_4664808661018102976_n.jpg?_nc_cat=107&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGysgj-a28dYnSaDUuo2ZZts2syreXihDqzazKt5eKEOjzH1BR1vp7zf8HMT2tasfo_S2TKfmZhdy9ui6Wdo8we&_nc_ohc=ldjW8hTh-5sQ7kNvwGqsw-8&_nc_oc=AdptCRfgiLYVB5eFZw6zURDWPDNSd9RcXtNXQUTs2d17L0t4lwHZjET6zvlRU_YT_ZFAJvabfFX9i5PfgAVmyt3S&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=Uy2-eU1q6DtELqdihyU9Kw&_nc_ss=7a3a8&oh=00_Af27YUuN6mWEFxrXCPqer4d_bOS1Y0s_MaFCqI3rd5j9DA&oe=69D56389" alt="Kỷ yếu 6">
-            <img src="https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-6/476191559_122193049094185245_7111767719019522168_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEI8fns34rCJmvlK_-V-4Bnl6UOy7rxTC-XpQ7LuvFML839eUlb0l1J9tL5xR_BvXTD0QaZHMKAIDJCW7OdJAHy&_nc_ohc=32sgIVhEnj8Q7kNvwGYkKCh&_nc_oc=AdqUO0G9Ae_MFYNrOZTkMXIg9IoEcWV4JsQf2yRMYufcZBBXnMX6Cgr4vluWTvLj_oVH948ugNzPTaR48ugH92mF&_nc_zt=23&_nc_ht=scontent-hkg4-1.xx&_nc_gid=IW64j9DCoUD3kCMpP7fjjw&_nc_ss=7a3a8&oh=00_Af2ah3Ftxo3K5F2p0zCinzLsBmWhZj-kxsGHZMRx3f1HAA&oe=69D56D58" alt="Kỷ yếu 4">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476225622_122193123632185245_8861135236452400516_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeGzegDxaG-YGHfQjUuR88KSc2eHP3q-t9xzZ4c_er633JV_wSG6cpJ1tcPdprwP1XB7e1s_QgAK31DVVhpRO_UI&_nc_ohc=vLoIMzAzpJEQ7kNvwEBkRje&_nc_oc=AdrJpS1QybO3_oVRdWZBTKlOOqC-5-oey5eh3mL08-O4y6NA3jTAuh7ZewOomlNErKVTq917TkbAFM285etHaOhN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=HZa6c-nyEMbdg9zI696Z3w&_nc_ss=7a3a8&oh=00_Af0JLXUskfkEHks29Rhhx_a6ya3-n-IXtl2rMhEBv-_oRg&oe=69D57979" alt="Kỷ yếu 7">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476226742_122193123506185245_353970942905238217_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFfLy-86bWyTYEEHRCo4MDFzXatQFTafoHNdq1AVNp-gV7XTi9qe7gdb0RyZ3PEj1aCbFFBZKSQ4vJyborsd0QB&_nc_ohc=anvfxMVG4dQQ7kNvwFOx98D&_nc_oc=AdrZmlziewYLOlCbWnanwmjaS7xHJn_VEknFfOPN0opaPbHsSXBk_CyvTwTdzrfYbQX-d7DlmNIhmOdN4iVNWgeY&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=xMjzESqaPAmIGp95BRm1WQ&_nc_ss=7a3a8&oh=00_Af3Cnlc9D2mcTN6pTf2H1fwYyFd1XFi_CVfpqW2yzSCXdQ&oe=69D55F86" alt="Kỷ yếu 1">
-            <img src="https://scontent-hkg1-2.xx.fbcdn.net/v/t39.30808-6/476311272_122193121328185245_766773050211721502_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeHOlYTMd1675VBDrXrtVIQqYYPBZzTcGAhhg8FnNNwYCFSwGu2LXofaaB7Xji8me7q2CZuSuiuQAcAfVE0gO96Q&_nc_ohc=hc17VUvEGpYQ7kNvwHlm4hF&_nc_oc=AdpwKVimiuCdgHmI2gdzj_cirE0dclDvHT4pHb049BO0oc0XNUMvJ3Ms7b6OpNzeNW0czRBC7U96Q-uxLyRWeAru&_nc_zt=23&_nc_ht=scontent-hkg1-2.xx&_nc_gid=hee9ROPlxV6PM8_XsZUxLQ&_nc_ss=7a3a8&oh=00_Af1XB08sLG7tFDnHiDSfhEhXwn7jJNLLMo_h2S3pnAAikg&oe=69D574BC" alt="Kỷ yếu 8">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476178900_122193123158185245_1647602615092864714_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=101&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEOzlG27vrq5WGk4-_duSNyOSih0QB-6vQ5KKHRAH7q9GrpXAHuCvoYeZBiQ70gkc1y0vtXatNdNOQCLWwJP_CX&_nc_ohc=bjvHPOdxe3MQ7kNvwGgRixj&_nc_oc=AdoX2vwAUnUB5nq9kI8pAFD6x362YdO8W0Gl5nHoARq8wJNmLQ3nomhfQZhdBhgUfcdYB7Nbb1LmvoB4qjHLVJnN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=ieecH0bizPip2r1Vwhh_cA&_nc_ss=7a3a8&oh=00_Af08XkVsm6OB242phrGdF-rS-j6jSO7vXfz6F-xsYpYmmg&oe=69D5879D" alt="Kỷ yếu 2">
-            <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476356140_122193121442185245_5554739437405169675_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeH0aYdu9Yn3HS69m01mXecurBxCvmYrvnusHEK-Ziu-e4dtoWxcWL8iIw6-X4IXwzN-i8kcWhaQHmQPVklBnqfy&_nc_ohc=UCUfzsYv7xgQ7kNvwFHwnxG&_nc_oc=AdrIQ1k4auPovmWmDYy_0sluooISMPavsCRG_v2Jgw0nY5e8lugp_sH1jtyOJBx4u5iLDV1gVp7xiqI7rtnxOSkz&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=yO2Vy4Ohw6GW6U9oxs6njQ&_nc_ss=7a3a8&oh=00_Af08NNkysucNbPSRTigmrITSNuctbTRidey79L8-zUZbwA&oe=69D56121" alt="Kỷ yếu 3">
-          </div>
+          <div class="film-track track-2" id="track2"></div>
+        </div>
+
+        <div class="film-wrapper fw-3">
+          <div class="film-track track-1" id="track3"></div>
+        </div>
+
+        <div class="film-wrapper fw-4">
+          <div class="film-track track-2" id="track4"></div>
+        </div>
+
+        <div class="film-wrapper fw-5">
+          <div class="film-track track-1" id="track5"></div>
         </div>
       </div>
 
@@ -460,40 +455,35 @@
     const reduceHeavy = window.innerWidth <= 640 || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let isOpen = false;
 
-    // Load ảnh cuộn phim nền
-    document.querySelectorAll('.film-track img').forEach((img, index) => {
-      img.loading = 'lazy'; img.decoding = 'async'; img.style.opacity = '0'; img.style.transform = 'scale(.985)';
-      const reveal = () => {
-        setTimeout(() => {
-          img.style.transition = 'opacity .5s ease, transform .5s ease';
-          img.style.opacity = '1'; img.style.transform = 'scale(1)';
-        }, index * 20);
-      };
-      if (img.complete) reveal();
-      else { img.addEventListener('load', reveal, { once:true }); }
-    });
+    // SCRIPT ĐỂ TỰ ĐỘNG NHÂN ĐÔI VÀ PHÂN BỔ ẢNH CHO 5 CUỘN PHIM (FIX LỖI KHOẢNG TRẮNG)
+    function setupFilmStrips() {
+      const track1 = document.getElementById('track1');
+      const baseHtml = track1.innerHTML;
+      const doubleHtml = baseHtml + baseHtml; // Nhân đôi để cuộn vô tận
 
-    // ===== HÀM KÍCH HOẠT TỪ MÀN HÌNH CHỜ =====
-    function startExperience() {
-      // 1. CHẠY NHẠC TRỰC TIẾP TỪ THẺ AUDIO NGAY LẬP TỨC
-      const bgMusic = document.getElementById('bgMusic');
-      bgMusic.volume = 0.5;
-      let playBgPromise = bgMusic.play();
-      if (playBgPromise !== undefined) {
-        playBgPromise.catch(error => {
-          console.log("iOS vẫn chặn: ", error);
-        });
-      }
+      track1.innerHTML = doubleHtml; // Hàng 1
+      document.getElementById('track2').innerHTML = doubleHtml; // Hàng 2
+      document.getElementById('track3').innerHTML = doubleHtml; // Hàng 3
+      document.getElementById('track4').innerHTML = doubleHtml; // Hàng 4
+      document.getElementById('track5').innerHTML = doubleHtml; // Hàng 5
 
-      // Mở khóa âm thanh Pop phụ
-      const popSound = document.getElementById('popSound');
-      popSound.play().then(() => { popSound.pause(); popSound.currentTime = 0; }).catch(()=>{});
+      // Tối ưu hóa tải ảnh
+      document.querySelectorAll('.film-track img').forEach((img, index) => {
+        img.loading = 'lazy'; img.decoding = 'async'; img.style.opacity = '0'; img.style.transform = 'scale(.985)';
+        const reveal = () => {
+          setTimeout(() => {
+            img.style.transition = 'opacity .5s ease, transform .5s ease';
+            img.style.opacity = '1'; img.style.transform = 'scale(1)';
+          }, index * 10);
+        };
+        if (img.complete) reveal();
+        else { img.addEventListener('load', reveal, { once:true }); }
+      });
+    }
 
-      // 2. Xóa màn hình chờ
-      const overlay = document.getElementById('start-overlay');
-      overlay.classList.add('hidden');
+    window.onload = () => {
+      setupFilmStrips();
 
-      // 3. Khởi động hiệu ứng rơi lá & máy quay
       const worldCamera = document.getElementById('world-camera');
       const leafContainer = document.getElementById('hero-leaf-container');
       const envelope = document.getElementById('envelope-wrapper');
@@ -504,10 +494,9 @@
         setTimeout(() => worldCamera.classList.add('pan-down'), 500);
         setTimeout(() => envelope.classList.add('fall-animation'), 3200); 
         setTimeout(() => hint.classList.add('show'), 4500);
-      }, 500); // Đợi 0.5s sau khi nhấn để bắt đầu mượt hơn
-    }
+      }, 1000);
+    };
 
-    // ===== HÀM MỞ THIỆP KHI NHẤN VÀO CHIẾC LÁ =====
     function triggerOpenAnimation() {
       if (isOpen) return;
       isOpen = true;
@@ -523,12 +512,23 @@
       hint.style.display = 'none';
       leafContainer.classList.add('blow-away');
 
-      // Phát tiếng mở thư POP
+      // KÍCH HOẠT ÂM THANH NGAY LẬP TỨC 
       const popSound = document.getElementById('popSound');
       popSound.volume = 1.0; 
       let playPromise = popSound.play();
-      if (playPromise !== undefined) { playPromise.catch(e => console.log("Lỗi Pop")); }
+      if (playPromise !== undefined) {
+        playPromise.catch(e => console.log("Trình duyệt chặn tiếng POP"));
+      }
 
+      // KÍCH HOẠT NHẠC NỀN 12.MP3
+      const bgMusic = document.getElementById('bgMusic');
+      bgMusic.volume = 0.5; 
+      let bgPromise = bgMusic.play();
+      if (bgPromise !== undefined) {
+        bgPromise.catch(e => console.log("Trình duyệt chặn nhạc nền"));
+      }
+
+      // HIỆU ỨNG HÌNH ẢNH
       setTimeout(() => flap.classList.add('open'), 420);
       setTimeout(() => letter.classList.add('slide-out'), 900);
 
@@ -542,7 +542,7 @@
     }
 
     // ==========================================
-    // HỆ THỐNG CANVAS VẼ HOA RƠI 3D TỐI ƯU HÓA
+    // HỆ THỐNG CANVAS VẼ HOA RƠI 3D 
     // ==========================================
     let petalsCanvas, pCtx, fallingPetals = [], animationFrameId;
 
