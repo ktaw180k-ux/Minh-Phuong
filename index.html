@@ -37,12 +37,14 @@
       position: absolute; top: 0; left: 0; width: 100%; 
       height: 200vh; height: 200dvh;
       will-change: transform;
-      -webkit-transform: translateZ(0); /* Ép GPU chạy mượt trên Mobile */
-      transform: translateZ(0);
       transition: transform 4.5s cubic-bezier(0.35, 0.1, 0.45, 1);
       z-index: 10;
     }
-    #world-camera.pan-down { transform: translateY(-50%); -webkit-transform: translateY(-50%); }
+    #world-camera.pan-down { 
+      -webkit-transform: translateY(-100vh); 
+      -webkit-transform: translateY(-100dvh);
+      transform: translateY(-100dvh); 
+    }
 
     /* ===== CẢNH 1: BẦU TRỜI & CÂY ===== */
     #intro-tree-scene { position: absolute; top: 0; left: 0; width: 100%; height: 100vh; height: 100dvh; overflow: hidden; }
@@ -166,7 +168,7 @@
 
     #petals-canvas { position:absolute; inset:0; z-index:25; pointer-events:none; }
 
-    /* ===== KEYFRAMES ===== */
+    /* ===== KEYFRAMES BỔ SUNG TIỀN TỐ CHO IOS ===== */
     @keyframes windBlow { 0% { transform: translate(0, 0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translate(120vw, 30vh) rotate(360deg); opacity: 0; } }
     @keyframes moveClouds{ to{ transform:translateX(-33.33%); } }
     @keyframes kiteHover { 0% { transform: translateY(0) translateX(0); } 100% { transform: translateY(-30px) translateX(20px); } }
@@ -174,7 +176,10 @@
     @keyframes stringSway { 0% { transform: rotate(-10deg); } 100% { transform: rotate(-25deg); } }
     @keyframes tailWave { 0% { transform: skewX(-15deg); } 100% { transform: skewX(15deg); } }
     @keyframes treeSway { 0% { transform: translateX(-50%) rotate(-1deg); } 100% { transform: translateX(-50%) rotate(2deg); } }
-    @keyframes fallDown { 0% { top: 18dvh; opacity: 1; transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; transform: scale(1); } }
+    
+    @-webkit-keyframes fallDown { 0% { top: 18dvh; opacity: 1; -webkit-transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; -webkit-transform: scale(1); } }
+    @keyframes fallDown { 0% { top: 18dvh; opacity: 1; -webkit-transform: scale(1); transform: scale(1); } 100% { top: calc(150dvh - 35px); opacity: 1; -webkit-transform: scale(1); transform: scale(1); } }
+    
     @keyframes leafFlutter { 0% { transform: translateX(-60px) rotate(-30deg) rotateX(20deg); } 100% { transform: translateX(80px) rotate(60deg) rotateX(-20deg); } }
     @keyframes blowAway { 0% { top: calc(150dvh - 35px); opacity: 1; } 100% { top: 90dvh; margin-left: 300px; opacity: 0; transform: rotate(180deg) scale(0.5); } }
     @keyframes envDrop{ 0%{ top:-10%; opacity:0; transform:translate(-50%,-50%) rotate(-5deg) scale(.9); } 100%{ top:50%; opacity:1; transform:translate(-50%,-50%) rotate(0deg) scale(1); } }
@@ -203,7 +208,8 @@
       .kite-container { left: 5%; top: 10%; transform: scale(0.7); }
       #hero-leaf-container { width: 55px; height: 55px; margin-left: -27.5px; }
       
-      @keyframes fallDown { 0% { top: 15dvh; opacity: 1; transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; transform: scale(1); } }
+      @-webkit-keyframes fallDown { 0% { top: 15dvh; opacity: 1; -webkit-transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; -webkit-transform: scale(1); } }
+      @keyframes fallDown { 0% { top: 15dvh; opacity: 1; -webkit-transform: scale(1); transform: scale(1); } 100% { top: calc(150dvh - 27px); opacity: 1; -webkit-transform: scale(1); transform: scale(1); } }
       
       #invitation-card{ width: 92vw; padding: 10px; border-radius: 18px; } 
       .card-inner{ padding: 24px 14px; border-radius: 14px; } 
@@ -228,7 +234,8 @@
 
   <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
   <script src="https://w.soundcloud.com/player/api.js"></script>
-  <iframe id="sc-widget" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/zang_producer/d-o-b-c-hong-kong-1999-1999&auto_play=false" width="0" height="0" frameborder="no" allow="autoplay" style="display:none;"></iframe>
+  
+  <iframe id="sc-widget" src="https://w.soundcloud.com/player/?url=https%3A//soundcloud.com/zang_producer/d-o-b-c-hong-kong-1999-1999&auto_play=false" allow="autoplay" style="position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; z-index: -100;"></iframe>
 
   <div id="world-camera">
     
@@ -308,7 +315,6 @@
             <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476226742_122193123506185245_353970942905238217_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeFfLy-86bWyTYEEHRCo4MDFzXatQFTafoHNdq1AVNp-gV7XTi9qe7gdb0RyZ3PEj1aCbFFBZKSQ4vJyborsd0QB&_nc_ohc=anvfxMVG4dQQ7kNvwFOx98D&_nc_oc=AdrZmlziewYLOlCbWnanwmjaS7xHJn_VEknFfOPN0opaPbHsSXBk_CyvTwTdzrfYbQX-d7DlmNIhmOdN4iVNWgeY&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=xMjzESqaPAmIGp95BRm1WQ&_nc_ss=7a3a8&oh=00_Af3Cnlc9D2mcTN6pTf2H1fwYyFd1XFi_CVfpqW2yzSCXdQ&oe=69D55F86" alt="Kỷ yếu 1">
             <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476178900_122193123158185245_1647602615092864714_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=101&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEOzlG27vrq5WGk4-_duSNyOSih0QB-6vQ5KKHRAH7q9GrpXAHuCvoYeZBiQ70gkc1y0vtXatNdNOQCLWwJP_CX&_nc_ohc=bjvHPOdxe3MQ7kNvwGgRixj&_nc_oc=AdoX2vwAUnUB5nq9kI8pAFD6x362YdO8W0Gl5nHoARq8wJNmLQ3nomhfQZhdBhgUfcdYB7Nbb1LmvoB4qjHLVJnN&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=ieecH0bizPip2r1Vwhh_cA&_nc_ss=7a3a8&oh=00_Af08XkVsm6OB242phrGdF-rS-j6jSO7vXfz6F-xsYpYmmg&oe=69D5879D" alt="Kỷ yếu 2">
             <img src="https://scontent-hkg1-1.xx.fbcdn.net/v/t39.30808-6/476356140_122193121442185245_5554739437405169675_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeH0aYdu9Yn3HS69m01mXecurBxCvmYrvnusHEK-Ziu-e4dtoWxcWL8iIw6-X4IXwzN-i8kcWhaQHmQPVklBnqfy&_nc_ohc=UCUfzsYv7xgQ7kNvwFHwnxG&_nc_oc=AdrIQ1k4auPovmWmDYy_0sluooISMPavsCRG_v2Jgw0nY5e8lugp_sH1jtyOJBx4u5iLDV1gVp7xiqI7rtnxOSkz&_nc_zt=23&_nc_ht=scontent-hkg1-1.xx&_nc_gid=yO2Vy4Ohw6GW6U9oxs6njQ&_nc_ss=7a3a8&oh=00_Af08NNkysucNbPSRTigmrITSNuctbTRidey79L8-zUZbwA&oe=69D56121" alt="Kỷ yếu 3">
-            <img src="https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-6/476191559_122193049094185245_7111767719019522168_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=7b2446&_nc_eui2=AeEI8fns34rCJmvlK_-V-4Bnl6UOy7rxTC-XpQ7LuvFML839eUlb0l1J9tL5xR_BvXTD0QaZHMKAIDJCW7OdJAHy&_nc_ohc=32sgIVhEnj8Q7kNvwGYkKCh&_nc_oc=AdqUO0G9Ae_MFYNrOZTkMXIg9IoEcWV4JsQf2yRMYufcZBBXnMX6Cgr4vluWTvLj_oVH948ugNzPTaR48ugH92mF&_nc_zt=23&_nc_ht=scontent-hkg4-1.xx&_nc_gid=IW64j9DCoUD3kCMpP7fjjw&_nc_ss=7a3a8&oh=00_Af2ah3Ftxo3K5F2p0zCinzLsBmWhZj-kxsGHZMRx3f1HAA&oe=69D56D58" alt="Kỷ yếu 4">
           </div>
         </div>
         
@@ -431,6 +437,33 @@
     const reduceHeavy = window.innerWidth <= 640 || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let isOpen = false;
 
+    // --- ĐOẠN CODE MỞ KHÓA ÂM THANH CHO IOS ---
+    let audioUnlocked = false;
+    function unlockAudio() {
+      if (audioUnlocked) return;
+      
+      // Khởi động trước âm thanh pop (Bật rồi tắt ngay lập tức để lấy quyền)
+      const popSound = document.getElementById('popSound');
+      popSound.play().then(() => {
+        popSound.pause();
+        popSound.currentTime = 0;
+      }).catch(e => {});
+
+      // Gọi widget SoundCloud sẵn sàng
+      const iframeElement = document.getElementById('sc-widget');
+      const widget = SC.Widget(iframeElement);
+      widget.setVolume(50);
+      
+      audioUnlocked = true;
+      // Xóa sự kiện sau khi đã mở khóa thành công
+      document.body.removeEventListener('touchstart', unlockAudio);
+      document.body.removeEventListener('click', unlockAudio);
+    }
+    // Lắng nghe cú chạm đầu tiên bất kỳ đâu trên màn hình
+    document.body.addEventListener('touchstart', unlockAudio, { once: true });
+    document.body.addEventListener('click', unlockAudio, { once: true });
+    // -------------------------------------------
+
     window.onload = () => {
       const worldCamera = document.getElementById('world-camera');
       const leafContainer = document.getElementById('hero-leaf-container');
@@ -473,7 +506,7 @@
       hint.style.display = 'none';
       leafContainer.classList.add('blow-away');
 
-      // KÍCH HOẠT ÂM THANH NGAY LẬP TỨC (Dành cho Android/iOS chặn autoplay)
+      // KÍCH HOẠT ÂM THANH
       const popSound = document.getElementById('popSound');
       popSound.volume = 1.0; 
       let playPromise = popSound.play();
@@ -483,7 +516,6 @@
 
       const iframeElement = document.getElementById('sc-widget');
       const widget = SC.Widget(iframeElement);
-      widget.setVolume(50); 
       widget.play(); 
 
       // HIỆU ỨNG HÌNH ẢNH
