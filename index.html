@@ -20,7 +20,6 @@
 
     *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
-    /* Hỗ trợ cả vh cho máy cũ và dvh cho iOS/Android mới để không bị lẹm thanh địa chỉ */
     html,body{ width:100%; height:100%; height:100dvh; overflow:hidden; background-color: #f9f1e7; }
 
     body{
@@ -30,6 +29,26 @@
         radial-gradient(circle at 18% 14%, rgba(255,238,188,.9), transparent 20%),
         radial-gradient(circle at 82% 10%, rgba(255,213,149,.35), transparent 18%),
         linear-gradient(180deg, #9ddcff 0%, #bde9ff 22%, #eaf7ff 48%, #f9f1e7 100%);
+    }
+
+    /* ===== MÀN HÌNH CHỜ (LÁCH LUẬT AUTOPLAY IOS) ===== */
+    #start-overlay {
+      position: fixed; inset: 0; z-index: 99999;
+      background: #f9f1e7; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+      cursor: pointer;
+    }
+    #start-overlay.hidden {
+      opacity: 0; visibility: hidden; pointer-events: none;
+    }
+    .start-title {
+      font-family: 'Dancing Script', cursive; font-size: 42px; color: #b73d31; margin-bottom: 10px;
+    }
+    .start-btn {
+      padding: 12px 30px; border-radius: 30px; background: #d35400; color: #fff;
+      font-weight: 600; font-size: 15px; letter-spacing: 1px; box-shadow: 0 8px 15px rgba(211, 84, 0, 0.3);
+      animation: heartbeat 1.5s infinite;
     }
 
     /* ===== BỘ ĐIỀU KHIỂN MÁY QUAY ===== */
@@ -186,7 +205,7 @@
     @keyframes heartbeat{ 0%,100%{ transform:translate(-50%, 0) scale(1); } 50%{ transform:translate(-50%, 0) scale(1.15); } }
     @keyframes sunPulse{ from{ transform:scale(1); } to{ transform:scale(1.08); } }
     
-    /* ===== TỐI ƯU MOBILE THẤY RÕ CUỘN PHIM ===== */
+    /* ===== TỐI ƯU MOBILE ===== */
     @media (max-width: 900px){
       :root{ --env-w:370px; --env-h:236px; }
       .detailed-tree { width: 550px; height: 650px; }
@@ -231,6 +250,11 @@
   </style>
 </head>
 <body>
+
+  <div id="start-overlay" onclick="startExperience()">
+    <div class="start-title">Kỷ Yếu 12A2</div>
+    <div class="start-btn">Chạm để mở thiệp 💌</div>
+  </div>
 
   <audio id="popSound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3" preload="auto"></audio>
   <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -437,60 +461,50 @@
     const reduceHeavy = window.innerWidth <= 640 || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let isOpen = false;
 
-    // --- ĐOẠN CODE MỞ KHÓA ÂM THANH CHO IOS ---
-    let audioUnlocked = false;
-    function unlockAudio() {
-      if (audioUnlocked) return;
-      
-      // Khởi động trước âm thanh pop (Bật rồi tắt ngay lập tức để lấy quyền)
-      const popSound = document.getElementById('popSound');
-      popSound.play().then(() => {
-        popSound.pause();
-        popSound.currentTime = 0;
-      }).catch(e => {});
+    // Load ảnh cuộn phim nền
+    document.querySelectorAll('.film-track img').forEach((img, index) => {
+      img.loading = 'lazy'; img.decoding = 'async'; img.style.opacity = '0'; img.style.transform = 'scale(.985)';
+      const reveal = () => {
+        setTimeout(() => {
+          img.style.transition = 'opacity .5s ease, transform .5s ease';
+          img.style.opacity = '1'; img.style.transform = 'scale(1)';
+        }, index * 20);
+      };
+      if (img.complete) reveal();
+      else { img.addEventListener('load', reveal, { once:true }); }
+    });
 
-      // Gọi widget SoundCloud sẵn sàng
+    // ===== HÀM KÍCH HOẠT TỪ MÀN HÌNH CHỜ =====
+    function startExperience() {
+      // 1. Chạy nhạc ngay lập tức (Bắt buộc phải chạy trong hàm click này để iOS không chặn)
       const iframeElement = document.getElementById('sc-widget');
       const widget = SC.Widget(iframeElement);
       widget.setVolume(50);
-      
-      audioUnlocked = true;
-      // Xóa sự kiện sau khi đã mở khóa thành công
-      document.body.removeEventListener('touchstart', unlockAudio);
-      document.body.removeEventListener('click', unlockAudio);
-    }
-    // Lắng nghe cú chạm đầu tiên bất kỳ đâu trên màn hình
-    document.body.addEventListener('touchstart', unlockAudio, { once: true });
-    document.body.addEventListener('click', unlockAudio, { once: true });
-    // -------------------------------------------
+      widget.play();
 
-    window.onload = () => {
+      // Mở khóa âm thanh Pop phụ
+      const popSound = document.getElementById('popSound');
+      popSound.play().then(() => { popSound.pause(); popSound.currentTime = 0; }).catch(()=>{});
+
+      // 2. Xóa màn hình chờ
+      const overlay = document.getElementById('start-overlay');
+      overlay.classList.add('hidden');
+
+      // 3. Khởi động hiệu ứng rơi lá & máy quay
       const worldCamera = document.getElementById('world-camera');
       const leafContainer = document.getElementById('hero-leaf-container');
       const envelope = document.getElementById('envelope-wrapper');
       const hint = document.getElementById('leaf-hint');
-
-      // Load ảnh cuộn phim
-      document.querySelectorAll('.film-track img').forEach((img, index) => {
-        img.loading = 'lazy'; img.decoding = 'async'; img.style.opacity = '0'; img.style.transform = 'scale(.985)';
-        const reveal = () => {
-          setTimeout(() => {
-            img.style.transition = 'opacity .5s ease, transform .5s ease';
-            img.style.opacity = '1'; img.style.transform = 'scale(1)';
-          }, index * 20);
-        };
-        if (img.complete) reveal();
-        else { img.addEventListener('load', reveal, { once:true }); }
-      });
 
       setTimeout(() => {
         leafContainer.classList.add('falling');
         setTimeout(() => worldCamera.classList.add('pan-down'), 500);
         setTimeout(() => envelope.classList.add('fall-animation'), 3200); 
         setTimeout(() => hint.classList.add('show'), 4500);
-      }, 1000);
-    };
+      }, 500); // Đợi 0.5s sau khi nhấn để bắt đầu mượt hơn
+    }
 
+    // ===== HÀM MỞ THIỆP KHI NHẤN VÀO CHIẾC LÁ =====
     function triggerOpenAnimation() {
       if (isOpen) return;
       isOpen = true;
@@ -506,19 +520,12 @@
       hint.style.display = 'none';
       leafContainer.classList.add('blow-away');
 
-      // KÍCH HOẠT ÂM THANH
+      // Phát tiếng mở thư POP
       const popSound = document.getElementById('popSound');
       popSound.volume = 1.0; 
       let playPromise = popSound.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(e => console.log("Trình duyệt chặn tiếng POP"));
-      }
+      if (playPromise !== undefined) { playPromise.catch(e => console.log("Lỗi Pop")); }
 
-      const iframeElement = document.getElementById('sc-widget');
-      const widget = SC.Widget(iframeElement);
-      widget.play(); 
-
-      // HIỆU ỨNG HÌNH ẢNH
       setTimeout(() => flap.classList.add('open'), 420);
       setTimeout(() => letter.classList.add('slide-out'), 900);
 
